@@ -1,1 +1,1 @@
-# LfN_project
+# Learning from networks project
