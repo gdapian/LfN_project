@@ -4,11 +4,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 import utils
 
-
-path = '../dataset/' + 'bezerra-et-al-2009_MOD.xls'
+data_folder_path = '../dataset/'
+dataset = 'bezerra-et-al-2009_MOD.xls'
+path = data_folder_path + dataset
 
 # plot a bipartite graph
-G, pol, pla = utils.load_dataset(path, verbose=True)
+G, pol, pla = utils.build_graph_from_xls(path, verbose=True)
 utils.plot_bipartite_graph(G, pol)
 
 # calculate the centralities

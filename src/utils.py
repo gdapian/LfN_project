@@ -3,7 +3,10 @@ import networkx as nx
 import numpy as np
 import matplotlib.pyplot as plt
 
-def load_dataset(path: str, verbose=False):
+def build_graph_from_xls(path: str, verbose=False):
+    """
+    Builds bipartite graph from .xls
+    """
     data_frame = pd.read_excel (path, header = 0)
     matrix = data_frame.to_numpy()
 
@@ -11,7 +14,7 @@ def load_dataset(path: str, verbose=False):
     pollinators = []
     plants = []
     if verbose == True:
-            print(f'\nADDING POLLINATORS\n')
+        print(f'\nADDING POLLINATORS\n')
     for i in range(1,len(matrix)):
         pollinators.append(matrix[i][0])
         if verbose == True:
@@ -19,7 +22,7 @@ def load_dataset(path: str, verbose=False):
     Graph.add_nodes_from(pollinators, bipartite=0)
 
     if verbose == True:
-            print(f'\nADDING PLANTS\n')
+        print(f'\nADDING PLANTS\n')
     for i in range(1,len(matrix[0])):
         plants.append(matrix[0][i])
         if verbose == True:
@@ -27,7 +30,7 @@ def load_dataset(path: str, verbose=False):
     Graph.add_nodes_from(plants, bipartite=1)
 
     if verbose == True:
-            print(f'\nADDING EDGES\n')
+        print(f'\nADDING EDGES\n')
     for i in range (1,len(matrix)):
         for j in range (1,len(matrix[0])):
             if matrix[i][j]:
@@ -39,6 +42,9 @@ def load_dataset(path: str, verbose=False):
 
 
 def plot_bipartite_graph(G: nx.Graph(), pollinators, node_colours=['blue', 'green'], figure_size=(15,10)):
+    """
+    Plots the bipartite graph
+    """
     mapping = {0: node_colours[0], 1: node_colours[1]}
     nodes = G.nodes
     colours = [mapping[nodes[n]['bipartite']] for n in nodes]
