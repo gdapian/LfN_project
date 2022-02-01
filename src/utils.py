@@ -54,12 +54,12 @@ def plot_bipartite_graph(G: nx.Graph(), pollinators, node_colours=['blue', 'gree
     
     
 def compute_n_radom_graphs(num_rand_graphs, node_first_set, node_last_set, edge_number):
-  """
-  Compute n random graphs following  
-  Erdős–Renyi algorithm
-  """
-  random_graphs = []
-  for i in range(num_rand_graphs):
-    G = nx.algorithms.bipartite.generators.gnmk_random_graph(node_first_set,node_last_set,edge_number)
-    random_graphs.append(G)
-  return random_graphs
+    """
+    Compute n random graphs following  
+    Erdős–Renyi algorithm
+    """
+    random_graphs = []
+    for i in range(num_rand_graphs):
+        G = nx.algorithms.bipartite.generators.gnmk_random_graph(node_first_set,node_last_set,edge_number)
+        random_graphs.append(G)
+     return random_graphs
