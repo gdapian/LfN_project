@@ -1,9 +1,18 @@
 # Learning from networks project
 
+# To do
+
+- [X] Centralities
+- [ ] Motifs
+- [ ] Random graph
+- [ ] BiRank
+
 # Table of Contents
 - [Introduction](#Introduction)
 - [Methods](#Methods)
 - [Requirements](#Requirements)
+- [Intended experiments](#Intended-experiments)
+- [Setup](#Setup)
 - [Usage](#Usage)
 - [References](#References)
 
@@ -21,6 +30,8 @@ Plant-pollinator networks describe the interaction between different types of po
 # Intended experiments
 
 # Requirements
+
+# Setup
 
 # Usage
 
