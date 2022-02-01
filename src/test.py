@@ -14,13 +14,7 @@ G, pol, pla = utils.build_graph_from_xls(path, verbose=True)
 utils.plot_bipartite_graph(G, pol)
 
 # calculate the centralities
-cc = nx.closeness_centrality(G, distance=None)
-print("\nCloseness centrality:")
-print(cc)
-bc = nx.betweenness_centrality(G, weight=None)
-print("\nBetwenness centrality:")
-print(bc)
-
+closeness_centrality, betweenness_centrality = utils.compute_centralities(G)
 
 ''' to fix, infinite loop with esu algorithm
 ##############################################################
