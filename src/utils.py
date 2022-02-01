@@ -64,10 +64,11 @@ def compute_n_radom_graphs(num_rand_graphs, node_first_set, node_last_set, edge_
         random_graphs.append(G)
     return random_graphs
 
-def compute_centralities(G: nx.Graph(), distance=None, weight=None):
+
+def compute_centralities(G: nx.Graph(), dist=None, w=None):
     """
     Computes closeness and betweenness centralities for a graph G
     """
-    cc = nx.closeness_centrality(G, distance=None)
-    bc = nx.betweenness_centrality(G, weight=None)
+    cc = nx.closeness_centrality(G, distance=dist)
+    bc = nx.betweenness_centrality(G, weight=dist)
     return cc, bc
