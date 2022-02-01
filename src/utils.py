@@ -70,5 +70,5 @@ def compute_centralities(G: nx.Graph(), dist=None, w=None):
     Computes closeness and betweenness centralities for a graph G
     """
     cc = nx.closeness_centrality(G, distance=dist)
-    bc = nx.betweenness_centrality(G, weight=dist)
+    bc = nx.betweenness_centrality(G, weight=w)
     return cc, bc

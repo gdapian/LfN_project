@@ -5,6 +5,8 @@
 - [X] Centralities
 - [ ] Motifs
 - [ ] Random graph
+- [ ] p-value
+- [ ] z-score
 - [ ] BiRank
 
 # Table of Contents
