@@ -19,7 +19,6 @@ utils.plot_centrality_graph(G, pol, closeness_centrality, title='Closeness Centr
 utils.plot_centrality_graph(G, pol, betweenness_centrality, title='Betweenness Centrality', max_node_size=1000, size=False, opacity=True)
 
 
-''' to fix, infinite loop with esu algorithm
 ##############################################################
 # generate the adjacency matrix
 G_adj = nx.to_numpy_array(G)
@@ -30,14 +29,14 @@ for i in range(G_adj.shape[0]):
 
 
 #np.savetxt('adj.txt', pd.DataFrame(G_adj).values, fmt='%d') # to check if G_adj is actually an adjacency matrix
-k = 2
+k = 5
 print("ESU:")
-subgraphs = motifs.EnumerateSubgraphs(G_adj, k)
+subgraphs = motifs.EnumerateSubgraphs(G_adj, k, True)
 #subgraphs = motifs.iterative_ESU(G_adj, k)
 
 
 # plot a graphlet
-index = 0
+index = 54
 bi_partition_index = 12 # maximum node of the first partition of the bipartite graph
 
 g = nx.Graph()
@@ -48,4 +47,3 @@ for i in range(k):
 		if (i<j) and (G_adj[subgraphs[index][i]][subgraphs[index][j]] == 1):
 			g.add_edge(subgraphs[index][i], subgraphs[index][j])
 utils.plot_bipartite_graph(g, subgraphs[index][np.where(subgraphs[index]<=bi_partition_index)])
-'''
