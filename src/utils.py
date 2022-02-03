@@ -94,3 +94,12 @@ def plot_centrality_graph(G: nx.Graph(), pollinators, centrality: dict, node_col
     plt.title(title)
     nx.draw_networkx(G, pos = nx.drawing.layout.bipartite_layout(G, pollinators), node_color=colors, node_size=sizes, font_size=5)
     plt.show()
+
+
+def GraphToAdjacencyMatrix(G):
+    G_adj = nx.to_numpy_array(G)
+    for i in range(G_adj.shape[0]):
+        for j in range (G_adj.shape[1]):
+            if G_adj[i][j]:
+                G_adj[i][j] = 1
+    return G_adj

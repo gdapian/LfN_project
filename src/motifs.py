@@ -1,5 +1,10 @@
+import numpy as np
+
 # https://tobigs.gitbook.io/tobigs-graph-study/chapter3./python-code-roix-and-esu-tree
 def iterative_ESU(G, k):
+
+  subgraphs = []
+
   N = len(G)
   visited = [False] * N
   queue = []
@@ -28,17 +33,20 @@ def iterative_ESU(G, k):
       else:
         sub[str(sorted(degree))] = 1
       print(front)
+      subgraphs.append(np.array(front))
       continue
     for i in range(N):
       if G[front[-1]][i]==1 and i > front[0]:
         queue.append(front+[i])
   for s in sub:
     ans += sub[s]
-  return ans
+  return ans, subgraphs
 
 #####################################################################
 
 import numpy as np
+import networkx as nx
+import utils
 
 subgraphs = []
 
@@ -99,3 +107,52 @@ def ExtendSubgraph(V_sub, V_ext, v, G, k, verbose):
   return
 
 
+def ESU_second_phase(G_adj, k, subgraphs, pol):
+  bi_partition_index = len(pol)-1 # maximum node of the first partition of the bipartite graph
+
+  graphlets = []
+  pols = []
+  plas = []
+  counts = []
+  ratios = []
+
+  index = 0
+  g = nx.Graph()
+  g.add_nodes_from(subgraphs[index][np.where(subgraphs[index]<=bi_partition_index)], bipartite=0)
+  g.add_nodes_from(subgraphs[index][np.where(subgraphs[index]>bi_partition_index)], bipartite=1)
+  for i in range(k):
+    for j in range(k):
+      if (i<j) and (G_adj[subgraphs[index][i]][subgraphs[index][j]] == 1):
+        g.add_edge(subgraphs[index][i], subgraphs[index][j])
+
+  graphlets.append(g)
+  pols.append(subgraphs[index][np.where(subgraphs[index]<=bi_partition_index)])
+  plas.append(subgraphs[index][np.where(subgraphs[index]>bi_partition_index)])
+  counts.append(1)
+  ratios.append(len(subgraphs[index][np.where(subgraphs[index]<=bi_partition_index)]) / len(subgraphs[index][np.where(subgraphs[index]>bi_partition_index)]))
+  #this is the ratio between the nodes of one class and those of the other. it is necessary to correct the problem of isomorphic graphs in case of bipartite graphs
+
+  for index in range(1,len(subgraphs)): # skip the first, already added above
+    g_current = nx.Graph()
+    g_current.add_nodes_from(subgraphs[index][np.where(subgraphs[index]<=bi_partition_index)], bipartite=0)
+    g_current.add_nodes_from(subgraphs[index][np.where(subgraphs[index]>bi_partition_index)], bipartite=1)
+    for i in range(k):
+      for j in range(k):
+        if (i<j) and (G_adj[subgraphs[index][i]][subgraphs[index][j]] == 1):
+          g_current.add_edge(subgraphs[index][i], subgraphs[index][j])
+    flag = True
+    for i in range(len(graphlets)):
+      GM = nx.algorithms.isomorphism.GraphMatcher(g_current, graphlets[i])
+      ratio_current = len(subgraphs[index][np.where(subgraphs[index]<=bi_partition_index)]) / len(subgraphs[index][np.where(subgraphs[index]>bi_partition_index)])
+      if(GM.is_isomorphic() and (ratio_current == ratios[i])):
+        flag = False
+        counts[i] = counts[i]+1
+        break
+    if flag:
+      graphlets.append(g_current)
+      pols.append(subgraphs[index][np.where(subgraphs[index]<=bi_partition_index)])
+      plas.append(subgraphs[index][np.where(subgraphs[index]>bi_partition_index)])
+      counts.append(1)
+      ratios.append(ratio_current)
+
+  return graphlets, pols, plas, counts
