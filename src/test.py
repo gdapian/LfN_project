@@ -15,6 +15,9 @@ utils.plot_bipartite_graph(G, pol)
 
 # calculate the centralities
 closeness_centrality, betweenness_centrality = utils.compute_centralities(G)
+utils.plot_centrality_graph(G, pol, closeness_centrality, title='Closeness Centrality', max_node_size=1000, size=True, opacity=True)
+utils.plot_centrality_graph(G, pol, betweenness_centrality, title='Betweenness Centrality', max_node_size=1000, size=False, opacity=True)
+
 
 ''' to fix, infinite loop with esu algorithm
 ##############################################################
