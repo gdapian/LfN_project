@@ -1,50 +1,4 @@
 import numpy as np
-
-# https://tobigs.gitbook.io/tobigs-graph-study/chapter3./python-code-roix-and-esu-tree
-def iterative_ESU(G, k):
-
-  subgraphs = []
-
-  N = len(G)
-  visited = [False] * N
-  queue = []
-  ans = 0
-  sub = {}
-  sub_graph = {}
-  for i in range(N):
-    queue.append([i])
-  while queue:
-    front = queue[0]
-    queue = queue[1:]
-    if len(front)==k:
-      degree = [0] * N
-      for f in front:
-        for j in front:
-          if G[f][j]==1:
-            degree[f] += 1
-            degree[j] += 1
-      if len(set(front)) != len(front):
-        continue
-      if str(sorted(front)) in sub_graph:
-        continue
-      sub_graph[str(sorted(front))] = 1
-      if str(sorted(degree)) in sub:
-        sub[str(sorted(degree))] += 1 
-      else:
-        sub[str(sorted(degree))] = 1
-      print(front)
-      subgraphs.append(np.array(front))
-      continue
-    for i in range(N):
-      if G[front[-1]][i]==1 and i > front[0]:
-        queue.append(front+[i])
-  for s in sub:
-    ans += sub[s]
-  return ans, subgraphs
-
-#####################################################################
-
-import numpy as np
 import networkx as nx
 import utils
 
@@ -111,10 +65,8 @@ def ESU_second_phase(G_adj, k, subgraphs, pol):
   bi_partition_index = len(pol)-1 # maximum node of the first partition of the bipartite graph
 
   graphlets = []
-  pols = []
-  plas = []
   counts = []
-  ratios = []
+  degrees = []
 
   index = 0
   g = nx.Graph()
@@ -126,11 +78,16 @@ def ESU_second_phase(G_adj, k, subgraphs, pol):
         g.add_edge(subgraphs[index][i], subgraphs[index][j])
 
   graphlets.append(g)
-  pols.append(subgraphs[index][np.where(subgraphs[index]<=bi_partition_index)])
-  plas.append(subgraphs[index][np.where(subgraphs[index]>bi_partition_index)])
   counts.append(1)
-  ratios.append(len(subgraphs[index][np.where(subgraphs[index]<=bi_partition_index)]) / len(subgraphs[index][np.where(subgraphs[index]>bi_partition_index)]))
-  #this is the ratio between the nodes of one class and those of the other. it is necessary to correct the problem of isomorphic graphs in case of bipartite graphs
+ 
+  deg_pol = []
+  for j in subgraphs[index][np.where(subgraphs[index]<=bi_partition_index)]:
+    deg_pol.append(g.degree()[j])
+  deg_pla = []
+  for j in subgraphs[index][np.where(subgraphs[index]>bi_partition_index)]:
+    deg_pla.append(g.degree()[j])
+  degrees.append([set(deg_pol), set(deg_pla)])
+  # "degrees" represent, for each graphlet, the set of degrees (of every node) with the respect of pollinators and plants. it is necessary to correct the problem of isomorphic graphs in case of bipartite graphs
 
   for index in range(1,len(subgraphs)): # skip the first, already added above
     g_current = nx.Graph()
@@ -143,16 +100,43 @@ def ESU_second_phase(G_adj, k, subgraphs, pol):
     flag = True
     for i in range(len(graphlets)):
       GM = nx.algorithms.isomorphism.GraphMatcher(g_current, graphlets[i])
-      ratio_current = len(subgraphs[index][np.where(subgraphs[index]<=bi_partition_index)]) / len(subgraphs[index][np.where(subgraphs[index]>bi_partition_index)])
-      if(GM.is_isomorphic() and (ratio_current == ratios[i])):
+      
+      deg_pol = []
+      for j in subgraphs[index][np.where(subgraphs[index]<=bi_partition_index)]:
+        deg_pol.append(g_current.degree()[j])
+      deg_pla = []
+      for j in subgraphs[index][np.where(subgraphs[index]>bi_partition_index)]:
+        deg_pla.append(g_current.degree()[j])
+      deg_current = [set(deg_pol), set(deg_pla)]
+      
+      if(GM.is_isomorphic() and (deg_current == degrees[i])):
         flag = False
         counts[i] = counts[i]+1
         break
+
     if flag:
       graphlets.append(g_current)
-      pols.append(subgraphs[index][np.where(subgraphs[index]<=bi_partition_index)])
-      plas.append(subgraphs[index][np.where(subgraphs[index]>bi_partition_index)])
       counts.append(1)
-      ratios.append(ratio_current)
+      degrees.append(deg_current)
 
-  return graphlets, pols, plas, counts
+  return graphlets, counts
+
+
+def ESU_bipartite_version(G, k, verbose=False): 
+
+  pol_temp, pla_temp = nx.algorithms.bipartite.sets(G)
+  pol = list(pol_temp)
+
+  # generate the adjacency matrix
+  G_adj = utils.GraphToAdjacencyMatrix(G)
+  #np.savetxt('adj.txt', pd.DataFrame(G_adj).values, fmt='%d') # to check if G_adj is actually an adjacency matrix
+
+  # ESU Algorithm - First Phase
+  print("ESU Algorithm First Phase starts...")
+  subgraphs = EnumerateSubgraphs(G_adj, k, verbose)
+
+  # ESU Algorithm - Second Phase
+  print("ESU Algorithm Second Phase starts...")
+  graphlets, counts = ESU_second_phase(G_adj, k, subgraphs, pol)
+
+  return graphlets, counts

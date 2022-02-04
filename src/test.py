@@ -20,21 +20,14 @@ utils.plot_centrality_graph(G, pol, betweenness_centrality, title='Betweenness C
 
 
 ##############################################################
-# generate the adjacency matrix
-G_adj = utils.GraphToAdjacencyMatrix(G)
-#np.savetxt('adj.txt', pd.DataFrame(G_adj).values, fmt='%d') # to check if G_adj is actually an adjacency matrix
 
-# ESU Algorithm - First Phase
 k = 4
-print("ESU Algorithm First Phase starts...")
-subgraphs = motifs.EnumerateSubgraphs(G_adj, k, True)
-#ans, subgraphs = motifs.iterative_ESU(G_adj, k)
-
-# ESU Algorithm - Second Phase
-# the case of isomorphic graphlets and with the same ratio of plants and pollinators is not handled correctly!!!!
-print("ESU Algorithm Second Phase starts...")
-graphlets, pols, plas, counts = motifs.ESU_second_phase(G_adj, k, subgraphs, pol)
+graphlets, counts = motifs.ESU_bipartite_version(G, k)
 
 for i in range(len(graphlets)):
-	utils.plot_bipartite_graph(graphlets[i], pols[i])
+	pol_current_temp, pla_current_temp = nx.algorithms.bipartite.sets(graphlets[i])
+	pol_current = list(pol_current_temp)
+	utils.plot_bipartite_graph(graphlets[i], pol_current)
 	print("Graphlet n°" + str(i) + " has " + str(counts[i]) + " occurrences.")
+
+
