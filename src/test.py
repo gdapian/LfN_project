@@ -29,5 +29,3 @@ for i in range(len(graphlets)):
 	pol_current = list(pol_current_temp)
 	utils.plot_bipartite_graph(graphlets[i], pol_current)
 	print("Graphlet n°" + str(i) + " has " + str(counts[i]) + " occurrences.")
-
-

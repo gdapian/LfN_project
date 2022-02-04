@@ -21,7 +21,7 @@ def ExtendSubgraph(V_sub, V_ext, v, G, k, verbose):
 
   if len(V_sub) == k:
     if verbose:
-      print("V_sub (len == k) : " + str(V_sub))
+      print("Added subgraph : " + str(V_sub))
     subgraphs.append(V_sub) 
     return
 
@@ -46,17 +46,6 @@ def ExtendSubgraph(V_sub, V_ext, v, G, k, verbose):
       if (u > v) and (u not in V_ext_prime):
         V_ext_prime.append(u)
 
-    '''
-    print("v : " + str(v))
-    print("w : " + str(w))
-    print("V_sub : " + str(V_sub))
-    print("N_w : " + str(N_w))
-    print("N_V_sub : " + str(N_V_sub))
-    print("N_excl : " + str(N_excl))
-    print("V_ext : " + str(V_ext))
-    print("V_ext_prime : " + str(V_ext_prime))
-    print("---------")
-    '''
     ExtendSubgraph(np.union1d(V_sub, w), V_ext_prime, v, G, k, verbose)
   return
 
@@ -76,9 +65,6 @@ def ESU_second_phase(G_adj, k, subgraphs, pol):
     for j in range(k):
       if (i<j) and (G_adj[subgraphs[index][i]][subgraphs[index][j]] == 1):
         g.add_edge(subgraphs[index][i], subgraphs[index][j])
-
-  graphlets.append(g)
-  counts.append(1)
  
   deg_pol = []
   for j in subgraphs[index][np.where(subgraphs[index]<=bi_partition_index)]:
@@ -86,6 +72,9 @@ def ESU_second_phase(G_adj, k, subgraphs, pol):
   deg_pla = []
   for j in subgraphs[index][np.where(subgraphs[index]>bi_partition_index)]:
     deg_pla.append(g.degree()[j])
+
+  graphlets.append(g)
+  counts.append(1)
   degrees.append([set(deg_pol), set(deg_pla)])
   # "degrees" represent, for each graphlet, the set of degrees (of every node) with the respect of pollinators and plants. it is necessary to correct the problem of isomorphic graphs in case of bipartite graphs
 
@@ -97,17 +86,18 @@ def ESU_second_phase(G_adj, k, subgraphs, pol):
       for j in range(k):
         if (i<j) and (G_adj[subgraphs[index][i]][subgraphs[index][j]] == 1):
           g_current.add_edge(subgraphs[index][i], subgraphs[index][j])
+
+    deg_pol = []
+    for j in subgraphs[index][np.where(subgraphs[index]<=bi_partition_index)]:
+      deg_pol.append(g_current.degree()[j])
+    deg_pla = []
+    for j in subgraphs[index][np.where(subgraphs[index]>bi_partition_index)]:
+      deg_pla.append(g_current.degree()[j])
+    deg_current = [set(deg_pol), set(deg_pla)]
+
     flag = True
     for i in range(len(graphlets)):
       GM = nx.algorithms.isomorphism.GraphMatcher(g_current, graphlets[i])
-      
-      deg_pol = []
-      for j in subgraphs[index][np.where(subgraphs[index]<=bi_partition_index)]:
-        deg_pol.append(g_current.degree()[j])
-      deg_pla = []
-      for j in subgraphs[index][np.where(subgraphs[index]>bi_partition_index)]:
-        deg_pla.append(g_current.degree()[j])
-      deg_current = [set(deg_pol), set(deg_pla)]
       
       if(GM.is_isomorphic() and (deg_current == degrees[i])):
         flag = False
@@ -124,9 +114,6 @@ def ESU_second_phase(G_adj, k, subgraphs, pol):
 
 def ESU_bipartite_version(G, k, verbose=False): 
 
-  pol_temp, pla_temp = nx.algorithms.bipartite.sets(G)
-  pol = list(pol_temp)
-
   # generate the adjacency matrix
   G_adj = utils.GraphToAdjacencyMatrix(G)
   #np.savetxt('adj.txt', pd.DataFrame(G_adj).values, fmt='%d') # to check if G_adj is actually an adjacency matrix
@@ -137,6 +124,8 @@ def ESU_bipartite_version(G, k, verbose=False):
 
   # ESU Algorithm - Second Phase
   print("ESU Algorithm Second Phase starts...")
+  pol_temp, pla_temp = nx.algorithms.bipartite.sets(G)
+  pol = list(pol_temp)
   graphlets, counts = ESU_second_phase(G_adj, k, subgraphs, pol)
 
   return graphlets, counts
