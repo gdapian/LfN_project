@@ -31,6 +31,7 @@ subgraphs = motifs.EnumerateSubgraphs(G_adj, k, True)
 #ans, subgraphs = motifs.iterative_ESU(G_adj, k)
 
 # ESU Algorithm - Second Phase
+# the case of isomorphic graphlets and with the same ratio of plants and pollinators is not handled correctly!!!!
 print("ESU Algorithm Second Phase starts...")
 graphlets, pols, plas, counts = motifs.ESU_second_phase(G_adj, k, subgraphs, pol)
 
