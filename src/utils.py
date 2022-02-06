@@ -2,10 +2,23 @@ import pandas as pd
 import networkx as nx
 import numpy as np
 import matplotlib.pyplot as plt
+import os
 
 RED = [.5, 0, 0]
 GREEN = [0, .5, 0]
 BLUE = [0, .5, .5]
+
+
+def load_paths(data_folder):
+    """
+    Loads all paths in data_folder
+    """
+    paths = []
+    for file_name in os.listdir(data_folder):
+        path = os.path.join(data_folder, file_name)
+        paths.append(path)
+    return paths
+
 
 def build_graph_from_xls(path: str, verbose=False):
     """
@@ -45,6 +58,21 @@ def build_graph_from_xls(path: str, verbose=False):
     return Graph, pollinators, plants
 
 
+def build_all_graphs(paths):
+    """
+    Builds all graphs
+    """
+    Graphs = []
+    pollinators = []
+    plants = []
+    for path in paths:
+        G, pol, pla = build_graph_from_xls(path, verbose=False)
+        Graphs.append(G)
+        pollinators.append(pol)
+        plants.append(pla)
+    return Graphs, pollinators, plants
+
+
 def plot_bipartite_graph(G: nx.Graph(), pollinators, node_colours=['blue', 'green'], figure_size=(15,10)):
     """
     Plots the bipartite graph
@@ -77,6 +105,23 @@ def compute_centralities(G: nx.Graph(), dist=None, w=None):
     cc = nx.closeness_centrality(G, distance=dist)
     bc = nx.betweenness_centrality(G, weight=w)
     return cc, bc
+
+
+def degree_centrality(G):
+    """
+    Returns a dictionary containing nodes of G and their degree
+    """
+    return {node: G.degree(node) for node in G.nodes()}
+
+
+def top_K_nodes(centrality, K):
+    """
+    Given a dict with centrality score for each node, returns top K nodes with highest score
+    """
+    sorted_centrality = sorted(centrality.items(), key=lambda x: x[1], reverse=True )
+    if K >= len(centrality):
+        return sorted_centrality
+    return sorted_centrality[0:K]
 
 
 def plot_centrality_graph(G: nx.Graph(), pollinators, centrality: dict, node_colours=[RED, GREEN], figure_size=(15,10), max_node_size=500, size=True, opacity=True, title='plot'):

@@ -10,14 +10,25 @@ dataset = 'bezerra-et-al-2009_MOD.xls'
 path = data_folder_path + dataset
 
 # plot a bipartite graph
-G, pol, pla = utils.build_graph_from_xls(path, verbose=True)
-utils.plot_bipartite_graph(G, pol)
+G, pol, pla = utils.build_graph_from_xls(path, verbose=False)
+#utils.plot_bipartite_graph(G, pol)
 
 # calculate the centralities
 closeness_centrality, betweenness_centrality = utils.compute_centralities(G)
-utils.plot_centrality_graph(G, pol, closeness_centrality, title='Closeness Centrality', max_node_size=1000, size=True, opacity=True)
-utils.plot_centrality_graph(G, pol, betweenness_centrality, title='Betweenness Centrality', max_node_size=1000, size=False, opacity=True)
+#utils.plot_centrality_graph(G, pol, closeness_centrality, title='Closeness Centrality', max_node_size=1000, size=True, opacity=True)
+#utils.plot_centrality_graph(G, pol, betweenness_centrality, title='Betweenness Centrality', max_node_size=1000, size=False, opacity=True)
 
+
+'''
+paths = utils.load_paths(data_folder_path)
+Graphs, pollinators, plants = utils.build_all_graphs(paths)
+for i in range(len(Graphs)):
+	utils.plot_bipartite_graph(Graphs[i], pollinators[i])
+
+'''
+
+ll = utils.top_K_nodes(closeness_centrality, 10)
+print(ll)
 
 ''' to fix, infinite loop with esu algorithm
 ##############################################################
