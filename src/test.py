@@ -14,9 +14,9 @@ G, pol, pla = utils.build_graph_from_xls(path, verbose=False)
 #utils.plot_bipartite_graph(G, pol)
 
 # calculate the centralities
-closeness_centrality, betweenness_centrality = utils.compute_centralities(G)
-#utils.plot_centrality_graph(G, pol, closeness_centrality, title='Closeness Centrality', max_node_size=1000, size=True, opacity=True)
-#utils.plot_centrality_graph(G, pol, betweenness_centrality, title='Betweenness Centrality', max_node_size=1000, size=False, opacity=True)
+# closeness_centrality, betweenness_centrality = utils.compute_centralities(G)
+# utils.plot_centrality_graph(G, pol, closeness_centrality, title='Closeness Centrality', max_node_size=1000, size=True, opacity=True)
+# utils.plot_centrality_graph(G, pol, betweenness_centrality, title='Betweenness Centrality', max_node_size=1000, size=False, opacity=True)
 
 
 '''
@@ -26,9 +26,13 @@ for i in range(len(Graphs)):
 	utils.plot_bipartite_graph(Graphs[i], pollinators[i])
 
 '''
+dc = utils.degree_centrality(G)
+cc, bc = utils.compute_centralities(G)
 
-ll = utils.top_K_nodes(closeness_centrality, 10)
-print(ll)
+centralities = [dc, cc, bc]
+
+df = utils.top_K_nodes_df(centralities, ['degree centrality', 'closeness centrality', 'betweenness centrality'], K=5, all_nodes=True)
+print(df)
 
 
 ##############################################################

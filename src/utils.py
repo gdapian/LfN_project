@@ -114,12 +114,12 @@ def degree_centrality(G):
     return {node: G.degree(node) for node in G.nodes()}
 
 
-def top_K_nodes(centrality, K):
+def top_K_nodes(centrality, K, all_nodes=False):
     """
     Given a dict with centrality score for each node, returns top K nodes with highest score
     """
     sorted_centrality = sorted(centrality.items(), key=lambda x: x[1], reverse=True )
-    if K >= len(centrality):
+    if K >= len(centrality) or all_nodes==True:
         return sorted_centrality
     return sorted_centrality[0:K]
 
@@ -148,3 +148,20 @@ def GraphToAdjacencyMatrix(G):
             if G_adj[i][j]:
                 G_adj[i][j] = 1
     return G_adj
+
+
+def top_K_nodes_df(centralities, centralities_names, K, all_nodes=False, show_value=False):
+    K_centralities = []
+    for c in centralities:
+        Kc = top_K_nodes(c, K, all_nodes)
+        if show_value == False:
+            Kc = [x[0] for x in Kc]
+        K_centralities.append(Kc)
+
+    d = {c_name : c for c_name, c in zip(centralities_names, K_centralities)}
+    if all_nodes or K >= len(K_centralities[0]):
+        r = len(K_centralities[0])
+    else:
+        r = K
+    df = pd.DataFrame(d, index=range(1, r+1))
+    return df
