@@ -31,10 +31,10 @@ cc, bc = utils.compute_centralities(G)
 
 centralities = [dc, cc, bc]
 
-df = utils.top_K_nodes_df(centralities, ['degree centrality', 'closeness centrality', 'betweenness centrality'], K=5, all_nodes=True)
+df = utils.top_K_nodes_df(G, centralities, ['degree centrality', 'closeness centrality', 'betweenness centrality'], K=5, all_nodes=False, only_pollinators=True, only_plants=False)
 print(df)
 
-
+'''
 ##############################################################
 # compute the counting of all subgraphs (#nodes = k) of graph G 
 k = 4
@@ -45,3 +45,4 @@ for i in range(len(graphlets)):
 	pol_current = list(pol_current_temp)
 	utils.plot_bipartite_graph(graphlets[i], pol_current)
 	print("Graphlet n°" + str(i) + " has " + str(counts[i]) + " occurrences.")
+'''

@@ -150,9 +150,13 @@ def GraphToAdjacencyMatrix(G):
     return G_adj
 
 
-def top_K_nodes_df(centralities, centralities_names, K, all_nodes=False, show_value=False):
+def top_K_nodes_df(G, centralities, centralities_names, K, all_nodes=False, show_value=False, only_pollinators=False, only_plants=False):
     K_centralities = []
     for c in centralities:
+        if only_pollinators and not only_plants:
+            c = {node: c[node] for node in nx.bipartite.sets(G)[0]}
+        if only_plants and not only_pollinators:
+            c = {node: c[node] for node in nx.bipartite.sets(G)[1]}
         Kc = top_K_nodes(c, K, all_nodes)
         if show_value == False:
             Kc = [x[0] for x in Kc]
