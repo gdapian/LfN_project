@@ -30,9 +30,9 @@ for i in range(len(Graphs)):
 ll = utils.top_K_nodes(closeness_centrality, 10)
 print(ll)
 
-''' to fix, infinite loop with esu algorithm
-##############################################################
 
+##############################################################
+# compute the counting of all subgraphs (#nodes = k) of graph G 
 k = 4
 graphlets, counts = motifs.ESU_bipartite_version(G, k)
 
@@ -41,4 +41,3 @@ for i in range(len(graphlets)):
 	pol_current = list(pol_current_temp)
 	utils.plot_bipartite_graph(graphlets[i], pol_current)
 	print("Graphlet n°" + str(i) + " has " + str(counts[i]) + " occurrences.")
-'''
