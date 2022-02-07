@@ -195,7 +195,6 @@ def compute_z_score_for_cc(graph, num_random_graphs, verbose = False):
     return z_score
 
 def create_edgelist_dataframe(G):
-
     edges = G.edges()
     pollinators = []
     plants = []
@@ -208,7 +207,6 @@ def create_edgelist_dataframe(G):
 
 #The other normalizer is 'CoHITS'
 def compute_birank_centrality(G, normalizer = 'HITS'):
-  
     bn = birankpy.BipartiteNetwork()
     bn.set_edgelist(
         create_edgelist_dataframe(G),
