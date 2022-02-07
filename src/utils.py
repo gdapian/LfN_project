@@ -169,3 +169,26 @@ def top_K_nodes_df(G, centralities, centralities_names, K, all_nodes=False, show
         r = K
     df = pd.DataFrame(d, index=range(1, r+1))
     return df
+
+def compute_cc (graph):
+    return nx.algorithms.bipartite.cluster.robins_alexander_clustering(graph)
+    
+def compute_z_score_for_cc(graph, num_random_graphs, verbose = False):
+    cc_graph = compute_cc(graph)
+    top_nodes, bottom_nodes = nx.algorithms.bipartite.basic.sets(graph)
+    t_len = len(top_nodes)
+    b_len = len(bottom_nodes)
+    random_graphs = compute_n_radom_graphs(num_random_graphs, t_len, b_len, len(graph.edges()))
+
+    #Compute clustering coefficient for random graphs
+    cc_random = []
+    for G in random_graphs:
+        cc_random.append(compute_cc(G))
+    mean = np.mean(cc_random)
+    std = np.std(cc_random)
+    if verbose:
+        print(f"The clustering coefficient for the graph is: {cc_graph}")
+        print(f"The mean = {mean}, std = {std}")
+    z_score = (cc_graph - mean)/std
+
+    return z_score
