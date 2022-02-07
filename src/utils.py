@@ -3,6 +3,7 @@ import networkx as nx
 import numpy as np
 import matplotlib.pyplot as plt
 import os
+import birankpy
 
 RED = [.5, 0, 0]
 GREEN = [0, .5, 0]
@@ -192,3 +193,28 @@ def compute_z_score_for_cc(graph, num_random_graphs, verbose = False):
     z_score = (cc_graph - mean)/std
 
     return z_score
+
+def create_edgelist_dataframe(G):
+
+    edges = G.edges()
+    pollinators = []
+    plants = []
+    for i, edge in enumerate(edges):
+        pollinators.append(edge[0])
+        plants.append(edge[1])
+    d = {'pollinators': pollinators, 'plants': plants}
+    df = pd.DataFrame(data=d)
+    return df
+
+#The other normalizer is 'CoHITS'
+def compute_birank_centrality(G, normalizer = 'HITS'):
+  
+    bn = birankpy.BipartiteNetwork()
+    bn.set_edgelist(
+        create_edgelist_dataframe(G),
+        top_col='pollinators', bottom_col='plants',
+        weight_col=None
+    )
+    #Create dataframes
+    pollinators_birank_df, plants_birank_df = bn.generate_birank(normalizer=normalizer)
+    return pollinators_birank_df, plants_birank_df
