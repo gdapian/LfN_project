@@ -93,9 +93,14 @@ def compute_n_radom_graphs(num_rand_graphs, node_first_set, node_last_set, edge_
     Erdős-Renyi algorithm
     """
     random_graphs = []
-    for i in range(num_rand_graphs):
+
+    i=0
+    while (i < num_rand_graphs):
         G = nx.algorithms.bipartite.generators.gnmk_random_graph(node_first_set,node_last_set,edge_number)
-        random_graphs.append(G)
+        if (nx.is_connected(G)):
+            random_graphs.append(G)
+            i=i+1
+
     return random_graphs
 
 

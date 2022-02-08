@@ -2,9 +2,8 @@ import numpy as np
 import networkx as nx
 import utils
 
-subgraphs = []
-
 def EnumerateSubgraphs(G, k, verbose = False):
+    subgraphs = []
     n = len(G)
 
     for v in range(n):
@@ -12,11 +11,11 @@ def EnumerateSubgraphs(G, k, verbose = False):
       for u in range(n):
         if (u > v) and (G[v][u] == 1): 
           V_ext.append(u)
-      ExtendSubgraph([v], V_ext, v, G, k, verbose)
+      ExtendSubgraph([v], V_ext, v, G, k, subgraphs, verbose)
 
     return subgraphs
 
-def ExtendSubgraph(V_sub, V_ext, v, G, k, verbose):
+def ExtendSubgraph(V_sub, V_ext, v, G, k, subgraphs, verbose):
   n = len(G)
 
   if len(V_sub) == k:
@@ -46,7 +45,7 @@ def ExtendSubgraph(V_sub, V_ext, v, G, k, verbose):
       if (u > v) and (u not in V_ext_prime):
         V_ext_prime.append(u)
 
-    ExtendSubgraph(np.union1d(V_sub, w), V_ext_prime, v, G, k, verbose)
+    ExtendSubgraph(np.union1d(V_sub, w), V_ext_prime, v, G, k, subgraphs, verbose)
   return
 
 
@@ -129,3 +128,85 @@ def ESU_bipartite_version(G, k, verbose=False):
   graphlets, counts = ESU_second_phase(G_adj, k, subgraphs, pol)
 
   return graphlets, counts
+
+# Monte-Carlo approach
+def compute_graphlets_scores(G, k, graphlets, counts, num_random_graphs):
+
+
+  # generate the random graphs
+  top_nodes, bottom_nodes = nx.algorithms.bipartite.basic.sets(G)
+  t_len = len(top_nodes)
+  b_len = len(bottom_nodes)
+  random_graphs = utils.compute_n_radom_graphs(num_random_graphs, t_len, b_len, len(G.edges()))
+  print("Generated " + str(num_random_graphs) + " random graphs.")
+
+  # perform ESU on all random graphs
+  graphlets_random_graphs = []
+  counts_random_graphs = []
+  for i in range(num_random_graphs):
+    print("Execute ESU algorithm on the " + str(i) + "° random graph.")
+    rg_graphlets, rg_counts = ESU_bipartite_version(random_graphs[i], k)
+    graphlets_random_graphs.append(rg_graphlets)
+    counts_random_graphs.append(rg_counts)
+
+  # for each graphlet of the real network, save the number of occurrencies of it for each random graph
+  counts_random_graphs_reduced = []
+  for i in range(len(graphlets)):
+
+    pol_temp_set, pla_temp_set = nx.algorithms.bipartite.sets(graphlets[i])
+    pol_temp = list(pol_temp_set)
+    pla_temp = list(pla_temp_set)
+
+    deg_pol = []
+    for jj in pol_temp:
+      deg_pol.append(graphlets[i].degree(jj))
+    deg_pla = []
+    for jj in pla_temp:
+      deg_pla.append(graphlets[i].degree(jj))
+    real_graph_degrees = [set(deg_pol), set(deg_pla)]
+
+    counts_random_graphs_reduced.append([])
+
+    for j in range(len(graphlets_random_graphs)):
+      for k in range(len(graphlets_random_graphs[j])):
+
+        pol_temp_set, pla_temp_set = nx.algorithms.bipartite.sets(graphlets_random_graphs[j][k])
+        pol_temp = list(pol_temp_set)
+        pla_temp = list(pla_temp_set)
+
+        deg_pol = []
+        for jj in pol_temp:
+          deg_pol.append(graphlets_random_graphs[j][k].degree(jj))
+        deg_pla = []
+        for jj in pla_temp:
+          deg_pla.append(graphlets_random_graphs[j][k].degree(jj))
+        random_graph_degrees = [set(deg_pol), set(deg_pla)]
+
+        GM = nx.algorithms.isomorphism.GraphMatcher(graphlets[i], graphlets_random_graphs[j][k])
+        
+        if(GM.is_isomorphic() and (real_graph_degrees == random_graph_degrees)):
+          counts_random_graphs_reduced[i].append(counts_random_graphs[j][k])
+          break
+
+  counts_rgr_mean = []
+  counts_rgr_std = []
+  p_value = []
+
+  for i in range(len(counts_random_graphs_reduced)):
+    counts_rgr_mean.append(np.mean(counts_random_graphs_reduced[i]))
+    counts_rgr_std.append(np.std(counts_random_graphs_reduced[i]))
+    
+    # compute p-value
+    k = 0
+    for j in range(len(counts_random_graphs_reduced[i])):
+      if counts_random_graphs_reduced[i][j]>=counts[i]:
+        k = k+1 
+    p = k/len(counts_random_graphs_reduced[i])
+    p_value.append(p)
+
+  # compute z-score
+  z_score = []
+  for i in range(len(graphlets)):
+    z_score.append((counts[i]-counts_rgr_mean[i])/counts_rgr_std[i])
+
+  return z_score, p_value
