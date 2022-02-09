@@ -46,7 +46,11 @@ print(df)
 ##############################################################
 
 # define the maximum size of the a possible graphlet. The minimum size of the graphlet is setted to 3 by default
-max_k = 3
+max_k = 4
+
+total_graphlets = []
+total_z_score = []
+total_p_value = []
 
 for k in range(3, max_k+1):
 	# compute the counting of all subgraphs (#nodes = k) of graph G 
@@ -80,11 +84,43 @@ for k in range(3, max_k+1):
 		# save the plot of the current graphlets
 		pol_current_temp, pla_current_temp = nx.algorithms.bipartite.sets(top_graphlets[j])
 		fig = utils.plot_bipartite_graph(top_graphlets[j], list(pol_current_temp), showFig = False)
-		fig.savefig("results/motifs/" + dataset[data_index] + "/k=" + str(k) + "/"+ str(j) +".png")
+		fig.savefig(newpath + "/" + str(j) +".png")
+		plt.close(fig)
 		# save the scores of the current graphlets
-		file = open("results/motifs/" + dataset[data_index] + "/k=" + str(k) + "/"+ str(j) +".txt", "w+")
+		file = open(newpath + "/" + str(j) +".txt", "w+")
 		file.write("z-score: " + str(top_z_score[j]) + "\n" + "p-value: " + str(top_p_value[j]))
 		file.close()
 
+	total_graphlets = total_graphlets + top_graphlets
+	total_z_score = total_z_score + top_z_score
+	total_p_value = total_p_value + top_p_value
+
 	print ("Top z-scores: " + str(top_z_score))
 	print ("Top p-values: " + str(top_p_value))
+
+
+top_total_graphlets, top_total_z_score, top_total_p_value = motifs.find_top_graphlets(total_graphlets, total_z_score, total_p_value, num=-1)
+
+newpath = "results/motifs/" + dataset[data_index] + "/total"
+
+# remove all the old contents from the folder
+try:
+    shutil.rmtree(newpath)
+except OSError as e:
+    print("Warning: %s - %s." % (e.filename, e.strerror))
+    print("Folder " + e.filename + " will be created.")
+
+# (re)create the folder
+if not os.path.exists(newpath):
+    os.makedirs(newpath)
+
+for j in range(len(top_total_graphlets)):
+	# save the plot of the current graphlets
+	pol_current_temp, pla_current_temp = nx.algorithms.bipartite.sets(top_total_graphlets[j])
+	fig = utils.plot_bipartite_graph(top_total_graphlets[j], list(pol_current_temp), showFig = False)
+	fig.savefig(newpath + "/" + str(j) +".png")
+	plt.close(fig)
+	# save the scores of the current graphlets
+	file = open(newpath + "/" + str(j) +".txt", "w+")
+	file.write("z-score: " + str(top_total_z_score[j]) + "\n" + "p-value: " + str(top_total_p_value[j]))
+	file.close()
