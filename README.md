@@ -2,12 +2,12 @@
 
 # To do
 
-- [X] Centralities
-- [ ] Motifs
-- [ ] Random graph
-- [ ] p-value
-- [ ] z-score
-- [ ] BiRank
+- [x] Centralities
+- [x] Motifs
+- [x] Random graph
+- [x] p-value
+- [x] z-score
+- [x] BiRank
 
 # Table of Contents
 - [Introduction](#Introduction)
@@ -32,9 +32,18 @@ Plant-pollinator networks describe the interaction between different types of po
 # Intended experiments
 
 # Requirements
-
+- numpy
+- matplotlib
+- pandas
+- networkx
+- birankpy
 # Setup
-
+```bash 
+git clone https://github.com/gdapian/LfN_project.git
+```
 # Usage
-
+```bash
+cd LfN_project/src
+jupyter notebook Plant-pollinator-project.ipynb
+```
 # References
