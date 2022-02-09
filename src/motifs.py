@@ -218,14 +218,20 @@ def find_top_graphlets(graphlets, z_score, p_value, num=-1):
   top_z_score = []
   top_p_value = []
 
+  graphlets_temp = graphlets.copy()
+  z_score_temp = z_score.copy()
+  p_value_temp = p_value.copy()
+
   if num == -1:
     num = len(graphlets)
 
   for i in range(num):
-    j = np.argmax(z_score)
-    top_z_score.append(z_score[j])
-    top_p_value.append(p_value[j])
-    top_graphlets.append(graphlets[j])
-    z_score.pop(j)
+    j = np.argmax(z_score_temp)
+    top_z_score.append(z_score_temp[j])
+    top_p_value.append(p_value_temp[j])
+    top_graphlets.append(graphlets_temp[j])
+    z_score_temp.pop(j)
+    p_value_temp.pop(j)
+    graphlets_temp.pop(j)
 
   return top_graphlets, top_z_score, top_p_value
