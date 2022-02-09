@@ -210,3 +210,22 @@ def compute_graphlets_scores(G, k, graphlets, counts, num_random_graphs):
     z_score.append((counts[i]-counts_rgr_mean[i])/counts_rgr_std[i])
 
   return z_score, p_value
+
+
+# to choose top motifs we use the z-score information
+def find_top_graphlets(graphlets, z_score, p_value, num=-1):
+  top_graphlets = []
+  top_z_score = []
+  top_p_value = []
+
+  if num == -1:
+    num = len(graphlets)
+
+  for i in range(num):
+    j = np.argmax(z_score)
+    top_z_score.append(z_score[j])
+    top_p_value.append(p_value[j])
+    top_graphlets.append(graphlets[j])
+    z_score.pop(j)
+
+  return top_graphlets, top_z_score, top_p_value

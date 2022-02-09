@@ -2,6 +2,8 @@ import pandas as pd
 import networkx as nx
 import numpy as np
 import matplotlib.pyplot as plt
+import os
+import shutil
 import utils
 import motifs
 
@@ -9,7 +11,9 @@ data_folder_path = '../dataset/'
 dataset = [	'bezerra-et-al-2009_MOD.xls', 
 			'olesen_aigrettes_MOD.xls',
 			'olesen_flores_MOD.xls']
-path = data_folder_path + dataset[0]
+
+data_index = 0
+path = data_folder_path + dataset[data_index]
 
 # plot a bipartite graph
 G, pol, pla = utils.build_graph_from_xls(path, verbose=False)
@@ -38,19 +42,49 @@ print(df)
 
 
 ##############################################################
-# compute the counting of all subgraphs (#nodes = k) of graph G 
-k = 5
-print("Execute ESU algorithm on the real network.")
-graphlets, counts = motifs.ESU_bipartite_version(G, k)
+#                          Motifs                            #
+##############################################################
 
-for i in range(len(graphlets)):
-	#pol_current_temp, pla_current_temp = nx.algorithms.bipartite.sets(graphlets[i])
-	#pol_current = list(pol_current_temp)
-	#utils.plot_bipartite_graph(graphlets[i], pol_current)
-	print("Graphlet n°" + str(i) + " has " + str(counts[i]) + " occurrences.")
+# define the maximum size of the a possible graphlet. The minimum size of the graphlet is setted to 3 by default
+max_k = 6
 
-num_random_graphs = 6
-z_score, p_value = motifs.compute_graphlets_scores(G, k, graphlets, counts, num_random_graphs)
+for k in range(3, max_k+1):
+	# compute the counting of all subgraphs (#nodes = k) of graph G 
+	print("Execute ESU algorithm on the real network. Value k = " + str(k))
+	graphlets, counts = motifs.ESU_bipartite_version(G, k)
 
-print ("z-score: " + str(z_score))
-print ("p-value: " + str(p_value))
+	for i in range(len(graphlets)):
+		#pol_current_temp, pla_current_temp = nx.algorithms.bipartite.sets(graphlets[i])
+		#utils.plot_bipartite_graph(graphlets[i], list(pol_current_temp))
+		print("Graphlet n°" + str(i) + " has " + str(counts[i]) + " occurrences.")
+
+	z_score, p_value = motifs.compute_graphlets_scores(G, k, graphlets, counts, num_random_graphs=100)
+
+	# compute the motifs
+	top_graphlets, top_z_score, top_p_value = motifs.find_top_graphlets(graphlets, z_score, p_value, num=-1)
+
+	newpath = "results/motifs/" + dataset[data_index] + "/k=" + str(k)
+
+	# remove all the old contents from the folder
+	try:
+	    shutil.rmtree(newpath)
+	except OSError as e:
+	    print("Warning: %s - %s." % (e.filename, e.strerror))
+	    print("Folder " + e.filename + " will be created.")
+
+	# (re)create the folder
+	if not os.path.exists(newpath):
+	    os.makedirs(newpath)
+
+	for j in range(len(top_graphlets)):
+		# save the plot of the current graphlets
+		pol_current_temp, pla_current_temp = nx.algorithms.bipartite.sets(top_graphlets[j])
+		fig = utils.plot_bipartite_graph(top_graphlets[j], list(pol_current_temp), showFig = False)
+		fig.savefig("results/motifs/" + dataset[data_index] + "/k=" + str(k) + "/"+ str(j) +".png")
+		# save the scores of the current graphlets
+		file = open("results/motifs/" + dataset[data_index] + "/k=" + str(k) + "/"+ str(j) +".txt", "w+")
+		file.write("z-score: " + str(top_z_score[j]) + "\n" + "p-value: " + str(top_p_value[j]))
+		file.close()
+
+	print ("Top z-scores: " + str(top_z_score))
+	print ("Top p-values: " + str(top_p_value))

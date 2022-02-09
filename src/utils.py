@@ -74,17 +74,19 @@ def build_all_graphs(paths):
     return Graphs, pollinators, plants
 
 
-def plot_bipartite_graph(G: nx.Graph(), pollinators, node_colours=['blue', 'green'], figure_size=(15,10)):
+def plot_bipartite_graph(G: nx.Graph(), pollinators, node_colours=['blue', 'green'], figure_size=(15,10), showFig = True):
     """
     Plots the bipartite graph
     """
     mapping = {0: node_colours[0], 1: node_colours[1]}
     nodes = G.nodes
     colours = [mapping[nodes[n]['bipartite']] for n in nodes]
-    plt.figure(figsize=figure_size)
+    f = plt.figure(figsize=figure_size)
     plt.title('Plant-pollinator network')
     nx.draw_networkx(G, pos = nx.drawing.layout.bipartite_layout(G, pollinators), node_color=colours, node_size=50, font_size=5)
-    plt.show()
+    if showFig:
+        plt.show()
+    return f
     
     
 def compute_n_radom_graphs(num_rand_graphs, node_first_set, node_last_set, edge_number):
