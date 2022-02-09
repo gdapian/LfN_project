@@ -54,8 +54,8 @@ for k in range(3, max_k+1):
 	graphlets, counts = motifs.ESU_bipartite_version(G, k)
 
 	for i in range(len(graphlets)):
-		pol_current_temp, pla_current_temp = nx.algorithms.bipartite.sets(graphlets[i])
-		utils.plot_bipartite_graph(graphlets[i], list(pol_current_temp))
+		#pol_current_temp, pla_current_temp = nx.algorithms.bipartite.sets(graphlets[i])
+		#utils.plot_bipartite_graph(graphlets[i], list(pol_current_temp))
 		print("Graphlet n°" + str(i) + " has " + str(counts[i]) + " occurrences.")
 
 	z_score, p_value = motifs.compute_graphlets_scores(G, k, graphlets, counts, num_random_graphs=100)
