@@ -44,7 +44,7 @@ print(df)
 ##############################################################
 #                          Motifs                            #
 ##############################################################
-
+'''
 # define the maximum size of the a possible graphlet. The minimum size of the graphlet is setted to 3 by default
 max_k = 6
 
@@ -124,3 +124,4 @@ for j in range(len(top_total_graphlets)):
 	file = open(newpath + "/" + str(j) +".txt", "w+")
 	file.write("z-score: " + str(top_total_z_score[j]) + "\n" + "p-value: " + str(top_total_p_value[j]))
 	file.close()
+'''
