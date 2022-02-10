@@ -46,7 +46,7 @@ print(df)
 ##############################################################
 
 # define the maximum size of the a possible graphlet. The minimum size of the graphlet is setted to 3 by default
-max_k = 4
+max_k = 6
 
 total_graphlets = []
 total_z_score = []
