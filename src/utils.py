@@ -15,10 +15,11 @@ def load_paths(data_folder):
     Loads all paths in data_folder
     """
     paths = []
-    for file_name in os.listdir(data_folder):
+    files = os.listdir(data_folder)
+    for file_name in files:
         path = os.path.join(data_folder, file_name)
         paths.append(path)
-    return paths
+    return paths, files
 
 
 def build_graph_from_xls(path: str, verbose=False):
@@ -74,7 +75,7 @@ def build_all_graphs(paths):
     return Graphs, pollinators, plants
 
 
-def plot_bipartite_graph(G: nx.Graph(), pollinators, node_colours=['blue', 'green'], figure_size=(15,10), showFig = True):
+def plot_bipartite_graph(G: nx.Graph(), pollinators, node_colours=[RED, GREEN], figure_size=(20,15), showFig = True, title='Plan-pollinator network'):
     """
     Plots the bipartite graph
     """
@@ -82,9 +83,31 @@ def plot_bipartite_graph(G: nx.Graph(), pollinators, node_colours=['blue', 'gree
     nodes = G.nodes
     colours = [mapping[nodes[n]['bipartite']] for n in nodes]
     f = plt.figure(figsize=figure_size)
-    plt.title('Plant-pollinator network')
-    nx.draw_networkx(G, pos = nx.drawing.layout.bipartite_layout(G, pollinators), node_color=colours, node_size=50, font_size=5)
+    plt.title(title)
+    pos = nx.drawing.layout.bipartite_layout(G, pollinators)
+    thickness = nx.get_edge_attributes(G, 'weight')
+    thickness = {key : value / max(thickness.values()) for key, value in zip(thickness.keys(), thickness.values())}
+
+    nx.draw_networkx_nodes(G,
+                           pos=pos,
+                           nodelist=nodes,
+                           node_size=2000,
+                           node_color=colours,
+                           alpha=0.7)
+
+    nx.draw_networkx_edges(G,
+                           pos=pos,
+                           edgelist = thickness.keys(),
+                           width=list(thickness.values()),
+                           edge_color='black')
+
+    nx.draw_networkx_labels(G, 
+                            pos=pos,
+                            labels=dict(zip(nodes,nodes)),
+                            font_size=15)
+
     if showFig:
+        plt.box(False)
         plt.show()
     return f
     
@@ -132,20 +155,43 @@ def top_K_nodes(centrality, K, all_nodes=False):
     return sorted_centrality[0:K]
 
 
-def plot_centrality_graph(G: nx.Graph(), pollinators, centrality: dict, node_colours=[RED, GREEN], figure_size=(15,10), max_node_size=500, size=True, opacity=True, title='plot'):
+def plot_centrality_graph(G: nx.Graph(), pollinators, centrality: dict, node_colours=[RED, GREEN], figure_size=(20,15), max_node_size=1500, size=True, opacity=True, title='plot'):
     mapping = {0: node_colours[0], 1: node_colours[1]}
     nodes = G.nodes()
     if opacity == True:
-        colors = [tuple(mapping[nodes[n]['bipartite']] + [centrality[n]]) for n in nodes]
+        colours = [tuple(mapping[nodes[n]['bipartite']] + [centrality[n]]) for n in nodes]
     else:
-        colors = [tuple(mapping[nodes[n]['bipartite']]) for n in nodes]
+        colours = [tuple(mapping[nodes[n]['bipartite']]) for n in nodes]
     if size == True:
         sizes = [max_node_size * centrality[n] for n in nodes]
     else:
         sizes = [max_node_size for n in nodes]
     plt.figure(figsize=figure_size)
     plt.title(title)
-    nx.draw_networkx(G, pos = nx.drawing.layout.bipartite_layout(G, pollinators), node_color=colors, node_size=sizes, font_size=5)
+
+    plt.title(title)
+    pos = nx.drawing.layout.bipartite_layout(G, pollinators)
+    thickness = nx.get_edge_attributes(G, 'weight')
+    thickness = {key : value / max(thickness.values()) for key, value in zip(thickness.keys(), thickness.values())}
+
+    nx.draw_networkx_nodes(G,
+                           pos=pos,
+                           nodelist=nodes,
+                           node_size=sizes,
+                           node_color=colours,)
+
+    nx.draw_networkx_edges(G,
+                           pos=pos,
+                           edgelist = thickness.keys(),
+                           width=list(thickness.values()),
+                           edge_color='black')
+
+    nx.draw_networkx_labels(G, 
+                            pos=pos,
+                            labels=dict(zip(nodes,nodes)),
+                            font_size=15)
+    
+    plt.box(False)
     plt.show()
 
 
