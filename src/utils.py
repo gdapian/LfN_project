@@ -93,11 +93,12 @@ def plot_bipartite_graph(G: nx.Graph(), pollinators, node_colours=[RED, GREEN], 
                            nodelist=nodes,
                            node_size=2000,
                            node_color=colours,
-                           alpha=0.7)
+                           alpha=0.7,
+                           node_shape='s')
 
     nx.draw_networkx_edges(G,
                            pos=pos,
-                           edgelist = thickness.keys(),
+                           edgelist=thickness.keys(),
                            width=list(thickness.values()),
                            edge_color='black')
 
@@ -156,6 +157,10 @@ def top_K_nodes(centrality, K, all_nodes=False):
 
 
 def plot_centrality_graph(G: nx.Graph(), pollinators, centrality: dict, node_colours=[RED, GREEN], figure_size=(20,15), max_node_size=1500, size=True, opacity=True, title='plot'):
+    """
+    Plots the bipartite graph, where the nodes' alpha and size can depend on their centrality value
+    if the opacity=True and size=True
+    """
     mapping = {0: node_colours[0], 1: node_colours[1]}
     nodes = G.nodes()
     if opacity == True:
@@ -178,7 +183,8 @@ def plot_centrality_graph(G: nx.Graph(), pollinators, centrality: dict, node_col
                            pos=pos,
                            nodelist=nodes,
                            node_size=sizes,
-                           node_color=colours,)
+                           node_color=colours,
+                           node_shape='s')
 
     nx.draw_networkx_edges(G,
                            pos=pos,
@@ -205,6 +211,9 @@ def GraphToAdjacencyMatrix(G):
 
 
 def top_K_nodes_df(G, centralities, centralities_names, K, all_nodes=False, show_value=False, only_pollinators=False, only_plants=False):
+    """
+    Returns a pandas dataframe cointaining the top K nodes according to different centralities
+    """
     K_centralities = []
     for c in centralities:
         if only_pollinators and not only_plants:
