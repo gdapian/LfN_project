@@ -267,6 +267,27 @@ def compute_z_score_for_cc(graph, num_random_graphs, verbose = False):
 
     return z_score
 
+def compute_p_value_for_cc(graph, num_random_graphs, verbose = False):
+	cc_graph = compute_cc(graph)
+	top_nodes, bottom_nodes = nx.algorithms.bipartite.basic.sets(graph)
+	t_len = len(top_nodes)
+	b_len = len(bottom_nodes)
+	random_graphs = compute_n_radom_graphs(num_random_graphs, t_len, b_len, len(graph.edges()))
+
+	  #Compute clustering coefficient for random graphs
+
+	counter = 0
+	for G in random_graphs:
+		cc_random = compute_cc(G)
+		if cc_random < cc_graph:
+			counter +=1
+
+	p_value = counter/len(random_graphs)
+	if verbose:
+		print(f"The p value is = {p_value}")
+
+	return p_value
+
 def create_edgelist_dataframe(G):
     edges = G.edges()
     pollinators = []
