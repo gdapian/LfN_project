@@ -2,7 +2,7 @@ import numpy as np
 import networkx as nx
 import utils
 
-def EnumerateSubgraphs(G, k, verbose = False):
+def EnumerateSubgraphs(G, k):
     subgraphs = []
     n = len(G)
 
@@ -11,16 +11,15 @@ def EnumerateSubgraphs(G, k, verbose = False):
       for u in range(n):
         if (u > v) and (G[v][u] == 1): 
           V_ext.append(u)
-      ExtendSubgraph([v], V_ext, v, G, k, subgraphs, verbose)
+      ExtendSubgraph([v], V_ext, v, G, k, subgraphs)
 
     return subgraphs
 
-def ExtendSubgraph(V_sub, V_ext, v, G, k, subgraphs, verbose):
+def ExtendSubgraph(V_sub, V_ext, v, G, k, subgraphs):
   n = len(G)
 
   if len(V_sub) == k:
-    if verbose:
-      print("Added subgraph : " + str(V_sub))
+    #print("Added subgraph : " + str(V_sub))
     subgraphs.append(V_sub) 
     return
 
@@ -45,7 +44,7 @@ def ExtendSubgraph(V_sub, V_ext, v, G, k, subgraphs, verbose):
       if (u > v) and (u not in V_ext_prime):
         V_ext_prime.append(u)
 
-    ExtendSubgraph(np.union1d(V_sub, w), V_ext_prime, v, G, k, subgraphs, verbose)
+    ExtendSubgraph(np.union1d(V_sub, w), V_ext_prime, v, G, k, subgraphs)
   return
 
 
@@ -118,11 +117,13 @@ def ESU_bipartite_version(G, k, verbose=False):
   #np.savetxt('adj.txt', pd.DataFrame(G_adj).values, fmt='%d') # to check if G_adj is actually an adjacency matrix
 
   # ESU Algorithm - First Phase
-  print("ESU Algorithm First Phase starts...")
-  subgraphs = EnumerateSubgraphs(G_adj, k, verbose)
+  if verbose:
+    print("ESU Algorithm First Phase starts...")
+  subgraphs = EnumerateSubgraphs(G_adj, k)
 
   # ESU Algorithm - Second Phase
-  print("ESU Algorithm Second Phase starts...")
+  if verbose:
+    print("ESU Algorithm Second Phase starts...")
   pol_temp, pla_temp = nx.algorithms.bipartite.sets(G)
   pol = list(pol_temp)
   graphlets, counts = ESU_second_phase(G_adj, k, subgraphs, pol)
@@ -130,7 +131,7 @@ def ESU_bipartite_version(G, k, verbose=False):
   return graphlets, counts
 
 # Monte-Carlo approach
-def compute_graphlets_scores(G, k, graphlets, counts, num_random_graphs):
+def compute_graphlets_scores(G, k, graphlets, counts, num_random_graphs, verbose = False):
 
 
   # generate the random graphs
@@ -138,14 +139,16 @@ def compute_graphlets_scores(G, k, graphlets, counts, num_random_graphs):
   t_len = len(top_nodes)
   b_len = len(bottom_nodes)
   random_graphs = utils.compute_n_radom_graphs(num_random_graphs, t_len, b_len, len(G.edges()))
-  print("Generated " + str(num_random_graphs) + " random graphs.")
+  if verbose:
+    print("Generated " + str(num_random_graphs) + " random graphs.")
 
   # perform ESU on all random graphs
   graphlets_random_graphs = []
   counts_random_graphs = []
   for i in range(num_random_graphs):
-    print("Execute ESU algorithm on the " + str(i) + "° random graph.")
-    rg_graphlets, rg_counts = ESU_bipartite_version(random_graphs[i], k)
+    if verbose:
+      print("Execute ESU algorithm on the " + str(i) + "° random graph.")
+    rg_graphlets, rg_counts = ESU_bipartite_version(random_graphs[i], k, verbose)
     graphlets_random_graphs.append(rg_graphlets)
     counts_random_graphs.append(rg_counts)
 

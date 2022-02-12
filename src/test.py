@@ -56,14 +56,14 @@ total_p_value = []
 for k in range(3, max_k+1):
 	# compute the counting of all subgraphs (#nodes = k) of graph G 
 	print("Execute ESU algorithm on the real network. Value k = " + str(k))
-	graphlets, counts = motifs.ESU_bipartite_version(G, k)
+	graphlets, counts = motifs.ESU_bipartite_version(G, k, verbose = True)
 
 	for i in range(len(graphlets)):
 		#pol_current_temp, pla_current_temp = nx.algorithms.bipartite.sets(graphlets[i])
 		#utils.plot_bipartite_graph(graphlets[i], list(pol_current_temp))
 		print("Graphlet n°" + str(i) + " has " + str(counts[i]) + " occurrences.")
 
-	z_score, p_value = motifs.compute_graphlets_scores(G, k, graphlets, counts, num_random_graphs=100)
+	z_score, p_value = motifs.compute_graphlets_scores(G, k, graphlets, counts, num_random_graphs=100, verbose = True)
 
 	# compute the motifs
 	top_graphlets, top_z_score, top_p_value = motifs.find_top_graphlets(graphlets, z_score, p_value, num=-1)
@@ -125,4 +125,12 @@ for j in range(len(top_total_graphlets)):
 	file = open(newpath + "/" + str(j) +".txt", "w+")
 	file.write("z-score: " + str(top_total_z_score[j]) + "\n" + "p-value: " + str(top_total_p_value[j]))
 	file.close()
+
+##################################################################
+# show the top graphlets
+#for j in range(min(len(top_total_graphlets), 10)):
+#	pol_current_temp, pla_current_temp = nx.algorithms.bipartite.sets(top_total_graphlets[j])
+#	utils.plot_bipartite_graph(top_total_graphlets[j], list(pol_current_temp))
+#	print("z-score: " + str(top_total_z_score[j]) + "\n" + "p-value: " + str(top_total_p_value[j]))
+
 '''
