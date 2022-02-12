@@ -13,7 +13,7 @@ dataset = [	'bezerra-et-al-2009_MOD.xls',
 			'olesen_flores_MOD.xls',
 			'schemske_et_al_1978_MOD.xls']
 
-data_index = 3
+data_index = 0
 path = data_folder_path + dataset[data_index]
 
 # plot a bipartite graph
@@ -45,7 +45,7 @@ print(df)
 ##############################################################
 #                          Motifs                            #
 ##############################################################
-
+'''
 # define the maximum size of the a possible graphlet. The minimum size of the graphlet is setted to 3 by default
 max_k = 6
 
@@ -125,3 +125,4 @@ for j in range(len(top_total_graphlets)):
 	file = open(newpath + "/" + str(j) +".txt", "w+")
 	file.write("z-score: " + str(top_total_z_score[j]) + "\n" + "p-value: " + str(top_total_p_value[j]))
 	file.close()
+'''
