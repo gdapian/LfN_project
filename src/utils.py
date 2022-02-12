@@ -95,11 +95,18 @@ def plot_bipartite_graph(G: nx.Graph(), pollinators, node_colours=[RED, GREEN], 
                            node_color=colours,
                            alpha=0.7)
 
-    nx.draw_networkx_edges(G,
-                           pos=pos,
-                           edgelist = thickness.keys(),
-                           width=list(thickness.values()),
-                           edge_color='black')
+    if (any(thickness)):
+        nx.draw_networkx_edges(G,
+                               pos=pos,
+                               edgelist = thickness.keys(),
+                               width=list(thickness.values()),
+                               edge_color='black')
+    else:
+        nx.draw_networkx_edges(G,
+                               pos=pos,
+                               #edgelist = thickness.keys(),
+                               width=5,
+                               edge_color='black')
 
     nx.draw_networkx_labels(G, 
                             pos=pos,
