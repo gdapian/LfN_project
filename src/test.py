@@ -128,9 +128,10 @@ for j in range(len(top_total_graphlets)):
 
 ##################################################################
 # show the top graphlets
+#print(dataset[data_index] + " : Top 10 motifs")
 #for j in range(min(len(top_total_graphlets), 10)):
 #	pol_current_temp, pla_current_temp = nx.algorithms.bipartite.sets(top_total_graphlets[j])
 #	utils.plot_bipartite_graph(top_total_graphlets[j], list(pol_current_temp))
 #	print("z-score: " + str(top_total_z_score[j]) + "\n" + "p-value: " + str(top_total_p_value[j]))
-
+#print("- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -")
 '''
