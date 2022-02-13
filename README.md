@@ -31,6 +31,6 @@ cd LfN_project/src
 ```
 Open the notebook
 ```bash
-jupyter notebook Plant-pollinator-project.ipynb
+jupyter notebook Plant_pollinator_project.ipynb
 ```
 # References
