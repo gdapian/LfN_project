@@ -17,6 +17,8 @@ Plant-pollinator networks describe the interaction between different types of po
 - `matplotlib`
 - `pandas`
 - `networkx`
+- `os`
+- `shutil`
 - `birankpy`
 - `jupyter notebook`
 # Setup
@@ -34,3 +36,10 @@ Open the notebook
 jupyter notebook Plant_pollinator_project.ipynb
 ```
 # References
+Benno I. Simmons et al. “Motifs in bipartite ecological networks: uncovering indirect interactions”. In: (2018).
+DOI: https://doi.org/10.1111/oik.05670
+
+Xiangnan He Ming Gao Min-Yen Kan Dingxian Wang. “BiRank: Towards Ranking on Bipartite Graphs”. In:
+(2017). DOI: https://arxiv.org/abs/1708.04396
+
+Sebastian Wernicke. “Efficient detection of network motifs”. In: (2006). DOI: 10.1109/TCBB.2006.51
